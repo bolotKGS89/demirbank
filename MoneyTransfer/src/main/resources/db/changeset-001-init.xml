@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="234" author="bolot">
+        <comment>Create finAccounts table</comment>
+        <createTable tableName="finAccounts">
+            <column name="id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="balance" type="DECIMAL(19,4)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addNotNullConstraint tableName="finAccounts" columnName="id" columnDataType="VARCHAR(36)"/>
+        <addNotNullConstraint tableName="finAccounts" columnName="balance" columnDataType="DECIMAL(19,4)"/>
+
+        <sql>CREATE INDEX idx_finAccounts_id ON finAccounts(id)</sql>
+    </changeSet>
+
+    <changeSet id="234" author="bolot">
+        <comment>Create transactions table</comment>
+        <createTable tableName="transactions">
+            <column name="id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="from_account" type="VARCHAR(36)">
+                <constraints nullable="false" foreignKeyName="fk_transactions_from_account"
+                             referencedTableName="finAccounts" referencedColumnNames="id"/>
+            </column>
+            <column name="to_account" type="VARCHAR(36)">
+                <constraints nullable="false" foreignKeyName="fk_transactions_to_account"
+                             referencedTableName="finAccounts" referencedColumnNames="id"/>
+            </column>
+            <column name="amount" type="DECIMAL(19,4)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference" type="VARCHAR(255)"/>
+            <column name="timestamp" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)" defaultValue="COMPLETED">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addNotNullConstraint tableName="transactions" columnName="id" columnDataType="VARCHAR(36)"/>
+        <addNotNullConstraint tableName="transactions" columnName="from_account" columnDataType="VARCHAR(36)"/>
+        <addNotNullConstraint tableName="transactions" columnName="to_account" columnDataType="VARCHAR(36)"/>
+        <addNotNullConstraint tableName="transactions" columnName="amount" columnDataType="DECIMAL(19,4)"/>
+        <addNotNullConstraint tableName="transactions" columnName="timestamp" columnDataType="TIMESTAMP"/>
+
+        <sql>CREATE INDEX idx_transactions_from_account ON transactions(from_account)</sql>
+        <sql>CREATE INDEX idx_transactions_to_account ON transactions(to_account)</sql>
+        <sql>CREATE INDEX idx_transactions_timestamp ON transactions(timestamp)</sql>
+    </changeSet>
+
+    <changeSet id="4" author="bolot">
+        <comment>Add initial test accounts</comment>
+        <insert tableName="finAccounts">
+            <column name="id" value="acc-001"/>
+            <column name="balance" value="10000.00"/>
+        </insert>
+        <insert tableName="finAccounts">
+            <column name="id" value="acc-002"/>
+            <column name="balance" value="5000.00"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

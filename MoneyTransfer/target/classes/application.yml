@@ -1,0 +1,32 @@
+server:
+  port: 8081
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.springframework.boot: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans
+  endpoint:
+    health:
+      show-details: always
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/springbootrest
+    username: springuser
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  liquibase:
+    enabled: true
+    change-log: classpath:db/db.changelog-master.xml
